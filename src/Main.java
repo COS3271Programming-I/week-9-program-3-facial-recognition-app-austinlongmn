@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -13,8 +14,13 @@ class Main {
   private static final int FACIAL_DATA_SIZE = 6;
   private static final int FACIAL_DATA_PERMUTATIONS = 15;
 
+  // Reads file and parses all the faces from it
+  // Returns a map with the key being the filename and the value being the
+  // facial data.
   private static Map<String, double[]> parseFacialInformation(String filename) {
     Map<String, double[]> dataEntries = new HashMap<>();
+
+    // Scan with a BufferedReader for performance
     try (InputStream inputStream = new FileInputStream(filename)) {
       Reader reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -24,9 +30,11 @@ class Main {
         while (scanner.hasNextLine()) {
           line = scanner.nextLine();
 
+          // Skip comments and blank lines
           if (line.startsWith("#") || line.isBlank()) {
             continue;
           } else if (line.startsWith("FACE")) {
+            // Face filename
             currentFace = line.split(" ")[1];
           } else {
             if (currentFace == null) {
@@ -36,6 +44,7 @@ class Main {
               System.exit(1);
             }
 
+            // Extract all data from line
             String[] strData = line.split("\\s+");
             double[] data = new double[strData.length];
 
@@ -67,6 +76,7 @@ class Main {
     return dataEntries;
   }
 
+  /// Converts the raw facial data into the ratios that can be compared.
   public static Map<String, double[]> convertFacialData(
     Map<String, double[]> dataEntries
   ) {
@@ -78,12 +88,15 @@ class Main {
     return result;
   }
 
+  /// Calculates all ratio combinations between the data points.
   public static double[] calculateFacialRatios(double[] data) {
     double[] ratios = new double[FACIAL_DATA_PERMUTATIONS];
 
     // Calculate all combinations of the dataset C(FACIAL_DATA_SIZE, 2)
     int dataPoint = 0;
 
+    // Calculates these ratios:
+    // A/B, A/C, A/D, A/E, A/F, B/C, B/D, B/E, B/F, C/D, C/E, C/F, D/E, D/F, E/F
     for (int i = 0; i < FACIAL_DATA_SIZE - 1; i++) {
       for (int i2 = i + 1; i2 < FACIAL_DATA_SIZE; i2++) {
         ratios[dataPoint] = data[i] / data[i2];
@@ -94,22 +107,27 @@ class Main {
     return ratios;
   }
 
+  /// Parses file and returns computed facial data
   public static Map<String, double[]> parseFacialRatios(String filename) {
     Map<String, double[]> facialData = parseFacialInformation(filename);
 
     return convertFacialData(facialData);
   }
 
+  /// Prompts user for a number
   public static double getDouble(Scanner scanner) {
     while (true) {
       try {
         return scanner.nextDouble();
-      } catch (NumberFormatException e) {
-        System.err.println("Error: you must enter a valid integer.");
+      } catch (InputMismatchException e) {
+        System.err.print("Error: you must enter a valid integer: ");
+      } finally {
+        scanner.nextLine();
       }
     }
   }
 
+  /// Inputs a face from the user
   public static double[] inputFacialData() {
     double[] result = new double[FACIAL_DATA_SIZE];
 
@@ -145,6 +163,7 @@ class Main {
     return result;
   }
 
+  /// Compares two faces - the lower the number, the better.
   public static double compareFacialRatios(
     double[] face1Ratios,
     double[] face2Ratios
@@ -161,6 +180,7 @@ class Main {
     return result;
   }
 
+  /// Finds the face of best match for searchRatios
   public static String findBestMatch(
     Map<String, double[]> datasetRatios,
     double[] searchRatios
@@ -169,7 +189,6 @@ class Main {
     String key = null;
     for (Map.Entry<String, double[]> entry : datasetRatios.entrySet()) {
       double difference = compareFacialRatios(entry.getValue(), searchRatios);
-      System.out.format("%s: %f\n", entry.getKey(), difference);
       if (difference < minDifference) {
         minDifference = difference;
         key = entry.getKey();

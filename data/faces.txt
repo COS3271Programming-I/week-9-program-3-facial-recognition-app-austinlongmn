@@ -8,21 +8,25 @@
 # F = distance from bottom of chin to middle of mouth
 
 # Faces randomly chosen from the Labelled Faces in the Wild (LFW) Dataset
+# Chosen from faces that were looking straight at the camera and were somewhat diverse
+# for best possible results.
 # (https://www.kaggle.com/datasets/jessicali9530/lfw-dataset)
 
-FACE: Alexandra_Spann_0001.jpg
-188 102 95 53 33 39
-
-FACE: Alberto_Ruiz_Gallardon_0001.jpg
-147 91 78 44 29 27
-
 FACE: Al_Pacino_0001.jpg
-157 86 82 40 44 30
+157 86 77 40 35 32
 
-FACE: Aishwarya_Rai_0001.jpg
-166 86 85 54 33 35
+FACE: Ann_Veneman_0002.jpg
+182 97 102 45 38 29
 
-FACE: Abdullah_Ahmand_Badawi_0001.jpg
-145 88 69 43 28 31
+FACE: David_Brown_0001.jpg
+166 100 87 44 32 32
+
+FACE: Luis_Gonzalez_0001.jpg
+135 72 68 31 29 28
+
+FACE: Yann_Martel_0002.jpg
+185 98 100 47 37 37
 
 # Mystery image used in example: Al_Pacino_0003.jpg
+# Records used in example:
+# 173 93 85 46 38 39
